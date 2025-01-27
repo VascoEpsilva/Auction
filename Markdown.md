@@ -84,23 +84,6 @@ Criar uma REST API utilizando .NET com conexão a uma base de dados Oracle, para
 
 ---
 
-## Princípios FURPS+ e GOFA
-
-### **FURPS+**:
-- **Funcionalidade**: A API deve fornecer os endpoints solicitados e as regras de negócio descritas.
-- **Usabilidade**: Estrutura clara de endpoints e respostas JSON bem formatadas.
-- **Confiabilidade**: Implementar validações para garantir consistência dos dados.
-- **Performance**: Otimizar queries na base de dados Oracle.
-- **Suportabilidade**: Código bem documentado e de fácil manutenção.
-- **(+) Extensibilidade**: Projetar a API para fácil expansão, como suporte a novos tipos de relatórios ou integrações.
-
-### **GOFA**:
-- **Generalidade**: Seguir boas práticas de design e padrões RESTful.
-- **Otimização**: Minimizar chamadas redundantes entre APIs e banco de dados.
-- **Flexibilidade**: Facilitar integração com o sistema Spring Boot.
-- **Adaptabilidade**: Preparar para possíveis mudanças futuras no modelo de dados.
-
----
 
 ## Tecnologias Utilizadas
 - **Framework**: .NET 6 ou superior.
@@ -111,3 +94,4 @@ Criar uma REST API utilizando .NET com conexão a uma base de dados Oracle, para
   - Serviço para lógica de negócios.
   - DTOs para transferência de dados.
 
+---

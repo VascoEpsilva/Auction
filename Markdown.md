@@ -83,15 +83,3 @@ Criar uma REST API utilizando .NET com conexão a uma base de dados Oracle, para
    - Cálculo dinâmico do número de vendas, itens, vendas por categoria e percentagens de itens vendidos.
 
 ---
-
-
-## Tecnologias Utilizadas
-- **Framework**: .NET 6 ou superior.
-- **Banco de Dados**: Oracle.
-- **Ferramentas de Integração**: Swagger para documentação da API, Postman para testes.
-- **Padrões de Design**:
-  - Repositório para acesso a dados.
-  - Serviço para lógica de negócios.
-  - DTOs para transferência de dados.
-
----

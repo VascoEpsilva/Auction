@@ -10,7 +10,7 @@ namespace Auction.Mappers
             List<ItemDTO> itemDTOs = new List<ItemDTO>();
             foreach (Item item in category.Items)
             {
-                itemDTOs.Add(ItemMapper.ToDto(item));
+                itemDTOs.Add(ItemMapper.ToDTO(item));
             }
             return new CategoryWithItemDTO
             {

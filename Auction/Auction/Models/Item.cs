@@ -19,7 +19,7 @@ namespace Auction.Models
         [Range(0, int.MaxValue)]
         public float Price { get; set; }
 
-        public bool isAvailable { get; set; } = true;
+        public bool IsAvailable { get; set; } = true;
 
 
         public int CategoryId{ get; set; }

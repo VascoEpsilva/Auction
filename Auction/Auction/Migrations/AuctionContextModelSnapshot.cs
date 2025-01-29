@@ -62,7 +62,7 @@ namespace Auction.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
-                    b.Property<bool>("isAvailable")
+                    b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");

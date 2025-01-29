@@ -5,7 +5,7 @@ namespace Auction.Mappers
 {
     public static class ItemMapper
     {
-        public static ItemDTO ToDto(Item item)
+        public static ItemDTO ToDTO(Item item)
         {
             return new ItemDTO
             {
@@ -13,7 +13,7 @@ namespace Auction.Mappers
                 Name = item.Name,
                 Description = item.Description,
                 Price = item.Price,
-                IsAvailable = item.isAvailable,
+                IsAvailable = item.IsAvailable,
                 CategoryId = item.CategoryId,
                 CategoryName = item.Category?.Description
             };
@@ -27,7 +27,7 @@ namespace Auction.Mappers
                 Name = itemDto.Name,
                 Description = itemDto.Description,
                 Price = itemDto.Price,
-                isAvailable = itemDto.IsAvailable,
+                IsAvailable = itemDto.IsAvailable,
                 CategoryId = itemDto.CategoryId
             };
         }

@@ -17,114 +17,57 @@ namespace Auction.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly AuctionContext context;
+        private readonly CategoryService categoryService;
 
-        public CategoriesController(AuctionContext context)
+        public CategoriesController(CategoryService categoryService)
         {
-            this.context = context;
+            this.categoryService = categoryService;
         }
 
-        // GET: api/Categories
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories()
         {
-            return await context.Categories.ToListAsync();
+            return Ok(await categoryService.GetCategoriesAsync());
         }
 
-        // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDTO>> GetCategory(int id)
         {
-            var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
-
-            if (category != null)
-            { 
-                await context.Entry(category)
-                    .Collection(c => c.Items)
-                    .LoadAsync();
-            }
-            return CategoryMapper.ToDTO(category);
+            var categoryDto = await categoryService.GetCategoryAsync(id);
+            if (categoryDto == null) return NotFound();
+            return Ok(categoryDto);
         }
-
-
 
         [HttpGet("{id}/items")]
         public async Task<ActionResult<CategoryWithItemDTO>> GetCategoryWithItems(int id)
         {
-            var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
-
-            if (category != null)
-            {
-                await context.Entry(category)
-                    .Collection(c => c.Items)
-                    .LoadAsync();
-            }
-            return CategoryMapper.ToDTOWithItem(category);
+            var categoryDto = await categoryService.GetCategoryWithItemsAsync(id);
+            if (categoryDto == null) return NotFound();
+            return Ok(categoryDto);
         }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, Category category)
         {
-            if (id != category.Id)
-            {
-                return BadRequest();
-            }
-
-            context.Entry(category).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            var success = await categoryService.UpdateCategoryAsync(id, category);
+            if (!success) return BadRequest("Category not found or invalid.");
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        public async Task<ActionResult<CategoryDTO>> PostCategory(Category category)
         {
-            context.Categories.Add(category);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCategory", new { id = category.Id }, category);
+            var categoryDto = await categoryService.CreateCategoryAsync(category);
+            return CreatedAtAction(nameof(GetCategory), new { id = categoryDto.Id }, categoryDto);
         }
 
-        // DELETE: api/Categories/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            if(!category.Items.IsNullOrEmpty())
-            {
-                return BadRequest("Existem items desta mesma categoria");
-            }
-
-            context.Categories.Remove(category);
-            await context.SaveChangesAsync();
-
+            var success = await categoryService.DeleteCategoryAsync(id);
+            if (!success) return BadRequest("Category not found or contains items.");
             return NoContent();
         }
-
-        private bool CategoryExists(int id)
-        {
-            return context.Categories.Any(e => e.Id == id);
-        }
     }
+
 }

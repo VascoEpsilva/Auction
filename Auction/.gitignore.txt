@@ -1,0 +1,77 @@
+# Visual Studio Specific
+.vscode/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build Files
+bin/
+obj/
+debug/
+release/
+TestResults/
+AppPackages/
+packages/
+node_modules/
+dist/
+bower_components/
+
+# ASP.NET Specific
+# User-specific files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+wwwroot/lib/
+.DS_Store
+
+# Publish outputs
+*.publishsettings
+*.pfx
+*.cer
+*.key
+*.crt
+*.p12
+
+# NuGet
+*.nupkg
+project.lock.json
+package-lock.json
+*.nuspec
+.nuget/
+!nuget.config
+!packages/repositories.config
+
+# Rider JetBrains
+.idea/
+
+# Resharper
+*.DotSettings.user
+_ReSharper*/
+
+# Entity Framework
+Migrations/
+
+# Logs
+*.log
+logs/
+log/
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# SQL Server
+*.mdf
+*.ldf
+*.bak
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Docker
+.dockerignore
+docker-compose.override.yml

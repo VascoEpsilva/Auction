@@ -9,6 +9,7 @@ using Auction.Data;
 using Auction.Models;
 using Auction.DTO;
 using Auction.Mappers;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Auction.Controllers
 {
@@ -42,14 +43,26 @@ namespace Auction.Controllers
                     .Collection(c => c.Items)
                     .LoadAsync();
             }
-
-
-
-            return CategoryMapper.ToDto(category);
+            return CategoryMapper.ToDTO(category);
         }
 
-        // PUT: api/Categories/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+
+        [HttpGet("{id}/items")]
+        public async Task<ActionResult<CategoryWithItemDTO>> GetCategoryWithItems(int id)
+        {
+            var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (category != null)
+            {
+                await context.Entry(category)
+                    .Collection(c => c.Items)
+                    .LoadAsync();
+            }
+            return CategoryMapper.ToDTOWithItem(category);
+        }
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, Category category)
         {
@@ -79,8 +92,6 @@ namespace Auction.Controllers
             return NoContent();
         }
 
-        // POST: api/Categories
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
@@ -98,6 +109,11 @@ namespace Auction.Controllers
             if (category == null)
             {
                 return NotFound();
+            }
+
+            if(!category.Items.IsNullOrEmpty())
+            {
+                return BadRequest("Existem items desta mesma categoria");
             }
 
             context.Categories.Remove(category);

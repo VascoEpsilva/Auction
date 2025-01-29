@@ -10,5 +10,6 @@ namespace Auction.Controllers
     [ApiController]
     public class ItemsController : ControllerBase
     {
+
     }
 }

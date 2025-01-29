@@ -5,14 +5,14 @@ namespace Auction.Mappers
 {
     public static class CategoryMapper
     {
-        public static CategoryDTO ToDto(Category category)
+        public static CategoryWithItemDTO ToDTOWithItem(Category category)
         {
             List<ItemDTO> itemDTOs = new List<ItemDTO>();
             foreach (Item item in category.Items)
             {
                 itemDTOs.Add(ItemMapper.ToDto(item));
             }
-            return new CategoryDTO
+            return new CategoryWithItemDTO
             {
                 Id = category.Id,
                 Description = category.Description, 
@@ -20,6 +20,17 @@ namespace Auction.Mappers
 
             };
         }
+
+        public static CategoryDTO ToDTO(Category category)
+        {
+            return new CategoryDTO
+            {
+                Id = category.Id,
+                Description = category.Description
+            };
+        }
+
+
 
         public static Category ToModel(CategoryDTO categoryDto)
         {

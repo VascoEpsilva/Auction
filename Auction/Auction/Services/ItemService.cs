@@ -25,11 +25,10 @@ namespace Auction.Services
             return items.Select(ItemMapper.ToDTO);
         }
 
-        public async Task<ItemDTO> GetItemByIdAsync(int id)
+        public async Task<ItemDTO?> GetItemByIdAsync(int id)
         {
             var item = await context.Items.Include(i => i.Category).FirstOrDefaultAsync(i => i.Id == id);
-            if (item == null) return null;
-            return ItemMapper.ToDTO(item);
+            return item == null ? null : ItemMapper.ToDTO(item);
         }
 
         public async Task<IEnumerable<ItemDTO>> GetAvailableItemsAsync()

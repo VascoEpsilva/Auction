@@ -28,14 +28,13 @@ namespace Auction.Services
             return sales.Select(SaleMapper.ToDto).ToList();
         }
 
-        public async Task<SaleDTO> GetSaleByIdAsync(int saleId)
+        public async Task<SaleDTO?> GetSaleByIdAsync(int saleId)
         {
             var sale = await context.Sale
                 .Include(s => s.Item)
                 .FirstOrDefaultAsync(s => s.Id == saleId);
 
-            if (sale == null) return null;
-            return SaleMapper.ToDto(sale);
+            return sale == null ? null : SaleMapper.ToDto(sale);
         }
 
         public async Task<List<SaleDTO>> GetSaleByPriceRangeAsync(float minPrice, float maxPrice)

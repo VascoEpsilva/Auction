@@ -47,18 +47,19 @@ namespace Auction.Services
 
         public async Task<float> GetAveragePriceAsync()
         {
-            if (!await context.Items.AnyAsync()) return 0;
-            return await context.Items.AverageAsync(i => i.Price);
+            return await context.Items.AnyAsync() ?
+                await context.Items.AverageAsync(i => i.Price) :
+                0;
         }
 
         public async Task<float> GetAveragePriceByCategoryIdAsync(int categoryId)
         {
             var itemsQuery = context.Items.Where(i => i.CategoryId == categoryId);
-            if (!await itemsQuery.AnyAsync()) return 0;
-            return await itemsQuery.AverageAsync(i => i.Price);
+            
+            return await itemsQuery.AnyAsync() ? await itemsQuery.AverageAsync(i => i.Price) : 0;
         }
 
-        public async Task<SaleDTO> GetCheapestItemSoldAsync()
+        public async Task<SaleDTO?> GetCheapestItemSoldAsync()
         {
             var cheapestSale = await context.Sale
                 .Include(s => s.Item)
@@ -68,7 +69,7 @@ namespace Auction.Services
             return cheapestSale == null ? null : SaleMapper.ToDto(cheapestSale);
         }
 
-        public async Task<SaleDTO> GetCheapestSoldByCategoryAsync(int categoryId)
+        public async Task<SaleDTO?> GetCheapestSoldByCategoryAsync(int categoryId)
         {
             var cheapestSale = await context.Sale
                 .Include(s => s.Item)
@@ -79,7 +80,7 @@ namespace Auction.Services
             return cheapestSale == null ? null : SaleMapper.ToDto(cheapestSale);
         }
 
-        public async Task<SaleDTO> GetCheapestSoldByMonthAsync(int year, int month)
+        public async Task<SaleDTO?> GetCheapestSoldByMonthAsync(int year, int month)
         {
             var cheapestSale = await context.Sale
                 .Include(s => s.Item)
@@ -90,17 +91,18 @@ namespace Auction.Services
             return cheapestSale == null ? null : SaleMapper.ToDto(cheapestSale);
         }
 
-        public async Task<ItemDTO> GetMostExpensiveItemSoldAsync()
+        public async Task<ItemDTO?> GetMostExpensiveItemSoldAsync()
         {
             var sale = await context.Sale
                 .Include(s => s.Item)
                 .OrderByDescending(s => s.SalePrice)
                 .FirstOrDefaultAsync();
 
-            if (sale == null) return null;
-            return ConvertSaleToItemDto(sale);
+           
+
+            return sale == null ? null : SaleMapper.ConvertSaleToItemDto(sale);
         }
-        public async Task<ItemDTO> GetMostExpensiveItemSoldByCategoryIdAsync(int categoryId)
+        public async Task<ItemDTO?> GetMostExpensiveItemSoldByCategoryIdAsync(int categoryId)
         {
             var sale = await context.Sale
                 .Include(s => s.Item)
@@ -108,37 +110,24 @@ namespace Auction.Services
                 .OrderByDescending(s => s.SalePrice)
                 .FirstOrDefaultAsync();
 
-            if (sale == null) return null;
-            return ConvertSaleToItemDto(sale);
-        }
-
-        public async Task<ItemDTO> GetMostExpensiveItemSoldByMonthAsync(int year, int month)
-        {
-            var sale = await context.Sale
-                .Include(s => s.Item)
-                .Where(s => s.SaleDate.Year == year && s.SaleDate.Month == month)
-                .OrderByDescending(s => s.SalePrice)
-                .FirstOrDefaultAsync();
-
-            if (sale == null) return null;
-            return ConvertSaleToItemDto(sale);
-        }
-
-        private ItemDTO ConvertSaleToItemDto(Sale sale)
-        {
-            var item = sale.Item;
-            if (item == null) return null;
-
-            return new ItemDTO
+            if (sale == null)
             {
-                Id = item.Id,
-                Name = item.Name,
-                Description = item.Description,
-                Price = item.Price,
-                IsAvailable = item.IsAvailable,
-                CategoryId = item.CategoryId,
-                CategoryName = item.Category?.Description
-            };
+                return null;
+            }
+
+            return SaleMapper.ConvertSaleToItemDto(sale);
+        }
+
+        public async Task<ItemDTO?> GetMostExpensiveItemSoldByMonthAsync(int year, int month)
+        {
+            var sale = await context.Sale
+                .Include(s => s.Item)
+                .Where(s => s.SaleDate.Year == year && s.SaleDate.Month == month)
+                .OrderByDescending(s => s.SalePrice)
+                .FirstOrDefaultAsync();
+
+
+            return sale == null ? null : SaleMapper.ConvertSaleToItemDto(sale);
         }
     }
 }

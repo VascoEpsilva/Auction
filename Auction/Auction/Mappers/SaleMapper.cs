@@ -56,5 +56,25 @@ namespace Auction.Mappers
             };
         }
 
+        public static ItemDTO ConvertSaleToItemDto(Sale sale)
+        {
+            var item = sale.Item;
+            if (item == null)
+            {
+                return null;
+            }
+
+            return new ItemDTO
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Description = item.Description,
+                Price = item.Price,
+                IsAvailable = item.IsAvailable,
+                CategoryId = item.CategoryId,
+                CategoryName = item.Category?.Description
+            };
+        }
+
     }
 }

@@ -51,10 +51,10 @@ namespace Auction.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ItemDTO>> PostItem([FromBody] Item item)
+        public async Task<ActionResult<ItemDTOCreate>> PostItem([FromBody] ItemDTOCreate item)
         {
-            var itemDto = await itemService.CreateItemAsync(item);
-            return CreatedAtAction(nameof(GetItem), new { id = itemDto.Id }, itemDto);
+            ItemDTO itemDTO = await itemService.CreateItemAsync(item);
+            return CreatedAtAction(nameof(GetItem), new { id = itemDTO.Id }, itemDTO);
         }
 
         [HttpPut("{id}")]

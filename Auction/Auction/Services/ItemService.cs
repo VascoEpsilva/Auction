@@ -2,6 +2,7 @@
 using Auction.DTO;
 using Auction.Mappers;
 using Auction.Models;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,17 +46,22 @@ namespace Auction.Services
             return items.Select(ItemMapper.ToDTO);
         }
 
-        public async Task<ItemDTO> CreateItemAsync(Item item)
+        public async Task<ItemDTO> CreateItemAsync(ItemDTOCreate itemDTOCreate)
         {
+            var category = await context.Categories.FindAsync(itemDTOCreate.CategoryId);
+            var item = ItemMapper.ToModelCreation(itemDTOCreate);
             context.Items.Add(item);
             await context.SaveChangesAsync();
+            await context.Entry(item).Reference(i => i.Category).LoadAsync();
+
             return ItemMapper.ToDTO(item);
         }
 
-        public async Task<bool> UpdateItemAsync(int id, Item item)
+        public async Task<bool> UpdateItemAsync(int id, ItemDTOUpdate itemDTOUpdate)
         {
-            if (id != item.Id) return false;
+            if (id != itemDTOUpdate.Id) return false;
 
+            Item item = ItemMapper.ToModelUpdate(itemDTOUpdate);
             context.Entry(item).State = EntityState.Modified;
 
             try

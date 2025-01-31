@@ -62,7 +62,7 @@ namespace Auction.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<SaleDTO>> CreateSale([FromBody] SaleDTO saleDto)
+        public async Task<ActionResult<SaleDTO>> CreateSale([FromBody] SaleDTOCreate saleDto)
         {
             try
             {
@@ -75,25 +75,12 @@ namespace Auction.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<SaleDTO>> UpdateSale(int id, [FromBody] SaleDTO saleDto)
-        {
-            try
-            {
-                var updatedSale = await saleService.UpdateSaleAsync(id, saleDto);
-                if (updatedSale == null) return NotFound("Sale not found or ID mismatch.");
-                return Ok(updatedSale);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSale(int id)
         {
             var deleted = await saleService.DeleteSaleAsync(id);
+
             if (!deleted) return NotFound("Sale not found.");
             return NoContent();
         }

@@ -78,9 +78,9 @@ namespace Auction.Services
             return sales.Select(SaleMapper.ToDto).ToList();
         }
 
-        public async Task<SaleDTO> CreateSaleAsync(SaleDTO saleDto)
+        public async Task<SaleDTO> CreateSaleAsync(SaleDTOCreate saleDto)
         {
-            var sale = SaleMapper.ToModel(saleDto);
+            var sale = SaleMapper.ToModelCreate(saleDto);
 
             var item = await context.Items.FirstOrDefaultAsync(i => i.Id == sale.ItemId);
             if (item == null)
@@ -103,42 +103,7 @@ namespace Auction.Services
             return SaleMapper.ToDto(sale);
         }
 
-        public async Task<SaleDTO> UpdateSaleAsync(int saleId, SaleDTO saleDto)
-        {
-            if (saleId != saleDto.Id)
-            {
-                return null;
-            }
-
-            var existingSale = await context.Sale.Include(s => s.Item).FirstOrDefaultAsync(s => s.Id == saleId);
-            if (existingSale == null) return null;
-
-            if (existingSale.ItemId != saleDto.ItemId)
-            {
-                var oldItem = await context.Items.FirstOrDefaultAsync(i => i.Id == existingSale.ItemId);
-                if (oldItem != null)
-                {
-                    oldItem.IsAvailable = true;
-                }
-
-                var newItem = await context.Items.FirstOrDefaultAsync(i => i.Id == saleDto.ItemId);
-                if (newItem == null) throw new Exception("New Item does not exist.");
-                if (!newItem.IsAvailable) throw new Exception("New Item is already sold.");
-
-                newItem.IsAvailable = false;
-
-                existingSale.ItemId = saleDto.ItemId;
-            }
-
-            existingSale.SaleDate = saleDto.SaleDate;
-            existingSale.SalePrice = saleDto.SalePrice;
-
-            await context.SaveChangesAsync();
-
-            await context.Entry(existingSale).Reference(s => s.Item).LoadAsync();
-
-            return SaleMapper.ToDto(existingSale);
-        }
+      
 
         public async Task<bool> DeleteSaleAsync(int saleId)
         {

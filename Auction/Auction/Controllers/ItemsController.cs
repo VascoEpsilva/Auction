@@ -58,9 +58,9 @@ namespace Auction.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItem(int id, [FromBody] Item item)
+        public async Task<IActionResult> PutItem(int id, [FromBody] ItemDTOUpdate itemDTOUpdate)
         {
-            var success = await itemService.UpdateItemAsync(id, item);
+            var success = await itemService.UpdateItemAsync(id, itemDTOUpdate);
             if (!success)
             {
                 return BadRequest("Item not found or invalid.");

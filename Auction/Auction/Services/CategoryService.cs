@@ -1,5 +1,6 @@
 ﻿using Auction.Data;
 using Auction.DTO;
+using Auction.Exceptions;
 using Auction.Mappers;
 using Auction.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,23 +17,26 @@ public class CategoryService
         this.context = context;
     }
 
-    public async Task<IEnumerable<CategoryDTO>> GetCategoriesAsync()
+    public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
     {
         var categories = await context.Categories.ToListAsync();
-        return categories.Select(CategoryMapper.ToDTO);
+        return categories;
     }
 
-    public async Task<CategoryDTO> GetCategoryAsync(int id)
+    public async Task<Category> GetCategoryAsync(int id)
     {
         var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
-        if (category == null) return null;
+        if (category == null)
+        {
+            throw new EntityNotFoundException("Category not found");
+        }
 
         await context.Entry(category).Collection(c => c.Items).LoadAsync();
 
-        return CategoryMapper.ToDTO(category);
+        return category;
     }
 
-    public async Task<CategoryWithItemDTO> GetCategoryWithItemsAsync(int id)
+    public async Task<Category> GetCategoryWithItemsAsync(int id)
     {
         var category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id);
         if (category == null) return null;
@@ -40,12 +44,15 @@ public class CategoryService
         
         await context.Entry(category).Collection(c => c.Items).LoadAsync();
 
-        return CategoryMapper.ToDTOWithItem(category);
+        return category;
     }
 
     public async Task<bool> UpdateCategoryAsync(int id, Category category)
     {
-        if (id != category.Id) return false;
+        if (id != category.Id)
+        {
+            throw new EntityNotFoundException("Id Not found");
+        }
 
         context.Entry(category).State = EntityState.Modified;
 
@@ -61,20 +68,25 @@ public class CategoryService
         }
     }
 
-    public async Task<CategoryDTO> CreateCategoryAsync(Category category)
+    public async Task<Category> CreateCategoryAsync(Category category)
     {
         context.Categories.Add(category);
         await context.SaveChangesAsync();
 
-        return CategoryMapper.ToDTO(category);
+        return category;
     }
 
     public async Task<bool> DeleteCategoryAsync(int id)
     {
         var category = await context.Categories.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == id);
-        if (category == null) return false;
-
-        if (category.Items.Any()) return false; 
+        if (category == null)
+        {
+            throw new EntityNotFoundException("Id not Found");
+        }
+        if (category.Items.Any())
+        {
+            throw new EntityHasRelationsException("Category has items and cannot be deleted.");
+        }
 
         context.Categories.Remove(category);
         await context.SaveChangesAsync();

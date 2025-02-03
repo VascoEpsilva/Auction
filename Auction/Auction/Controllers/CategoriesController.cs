@@ -10,6 +10,7 @@ using Auction.Models;
 using Auction.DTO;
 using Auction.Mappers;
 using Microsoft.IdentityModel.Tokens;
+using Auction.Exceptions;
 
 namespace Auction.Controllers
 {
@@ -27,46 +28,93 @@ namespace Auction.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories()
         {
-            return Ok(await categoryService.GetCategoriesAsync());
+            var cat = await categoryService.GetAllCategoriesAsync();
+            List<CategoryDTO> dtoList = new List<CategoryDTO>();
+            foreach (var category in cat)
+            {
+                dtoList.Add(CategoryMapper.ToDTO(category));
+            }
+
+            return Ok(dtoList);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDTO>> GetCategory(int id)
         {
-            var categoryDto = await categoryService.GetCategoryAsync(id);
-            if (categoryDto == null) return NotFound();
-            return Ok(categoryDto);
+            try
+            {
+                var categoryDto = CategoryMapper.ToDTO(await categoryService.GetCategoryAsync(id));
+                return Ok(categoryDto);
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}/items")]
         public async Task<ActionResult<CategoryWithItemDTO>> GetCategoryWithItems(int id)
         {
-            var categoryDto = await categoryService.GetCategoryWithItemsAsync(id);
-            if (categoryDto == null) return NotFound();
-            return Ok(categoryDto);
+            try
+            {
+                var categoryDto = CategoryMapper.ToDTOWithItem(await categoryService.GetCategoryWithItemsAsync(id));
+                return Ok(categoryDto);
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, Category category)
         {
-            var success = await categoryService.UpdateCategoryAsync(id, category);
-            if (!success) return BadRequest("Category not found or invalid.");
-            return NoContent();
+            try
+            {
+                var success = await categoryService.UpdateCategoryAsync(id, category);
+                return NoContent();
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost]
         public async Task<ActionResult<CategoryDTO>> PostCategory(Category category)
         {
-            var categoryDto = await categoryService.CreateCategoryAsync(category);
+            var categoryDto = CategoryMapper.ToDTO(await categoryService.CreateCategoryAsync(category));
             return CreatedAtAction(nameof(GetCategory), new { id = categoryDto.Id }, categoryDto);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var success = await categoryService.DeleteCategoryAsync(id);
-            if (!success) return BadRequest("Category not found or contains items.");
-            return NoContent();
+            try
+            {
+                var success = await categoryService.DeleteCategoryAsync(id);
+                return NoContent();
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (EntityHasRelationsException)
+            {
+                return BadRequest("Category contains Items");
+            }
         }
     }
 

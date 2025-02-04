@@ -7,21 +7,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
+import pt.upskill.bidmanager.DTO.ClientDTO;
 
-import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class User  {
+public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @NotNull
     private String name;
@@ -29,6 +29,12 @@ public class User  {
     @NotNull
     private String email;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     private List<Bid> bids;
+
+    public Client(ClientDTO clientDTO){
+        this.name = clientDTO.getName();
+        this.email = clientDTO.getEmail();
+        this.bids = new ArrayList<>();
+    }
 }

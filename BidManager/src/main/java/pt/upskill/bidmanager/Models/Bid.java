@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Date;
-import java.util.List;
 
 
 @Entity
@@ -19,10 +18,10 @@ public class Bid {
     private Date bidDate;
 
 
-    // Relação muitos-para-um com User
+    // Relação muitos-para-um com Client
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
     // Relação muitos-para-um com AuctionItem
     @ManyToOne

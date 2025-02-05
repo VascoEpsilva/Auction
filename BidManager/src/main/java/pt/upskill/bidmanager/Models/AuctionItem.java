@@ -27,6 +27,9 @@ public class AuctionItem {
     private int itemId;
 
     @NotNull
+    private Date startDate;
+
+    @NotNull
     private Date endDate;
 
     @NotNull

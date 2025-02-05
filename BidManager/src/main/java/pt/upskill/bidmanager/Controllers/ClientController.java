@@ -31,6 +31,7 @@ public class ClientController {
     /**
      * Returns a paginated list of clients, converted to DTOs, with HATEOAS links.
      */
+
     @GetMapping
     public ResponseEntity<CollectionModel<ClientDTO>> getAllClients(@RequestParam(name = "page", defaultValue = "0") int page,
                                                                     @RequestParam(name = "size", defaultValue = "10") int size)
@@ -86,10 +87,8 @@ public class ClientController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // Convert to DTO
         ClientDTO clientDTO = ClientMapper.toClientDTO(client);
 
-        //
         Link selfLink = linkTo(methodOn(ClientController.class)
                 .getClientById(id))
                 .withSelfRel();
@@ -97,6 +96,92 @@ public class ClientController {
 
         return new ResponseEntity<>(clientDTO, HttpStatus.OK);
     }
+
+    /**
+     *  Create (register) a new Client
+     */
+    @PostMapping("/Register")
+    public ResponseEntity<ClientDTO> createClient(@RequestBody ClientDTO clientDTO) {
+        Client newClient = ClientMapper.toClient(clientDTO);
+
+        Client savedClient = clientService.registerClient(newClient);
+
+        ClientDTO savedClientDTO = ClientMapper.toClientDTO(savedClient);
+
+        Link selfLink = linkTo(methodOn(ClientController.class)
+                .getClientById(savedClientDTO.getId()))
+                .withSelfRel();
+        savedClientDTO.add(selfLink);
+
+        return new ResponseEntity<>(savedClientDTO, HttpStatus.CREATED);
+    }
+
+
+
+    /**
+     * Get one Client by ID
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientDTO> getClientByID(@PathVariable int id) {
+        try {
+            Client client = clientService.getClientById(id);
+            ClientDTO dto = ClientMapper.toClientDTO(client);
+
+            Link selfLink = linkTo(methodOn(ClientController.class)
+                    .clientService.getClientById(id))
+                    .withSelfRel();
+            dto.add(selfLink);
+
+
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        }
+        catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ClientDTO> updateClient(@PathVariable int id,
+                                                  @RequestBody ClientDTO clientDTO) {
+        Client existingClient = clientService.getClientById(id);
+
+        if(existingClient == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        existingClient.setName(clientDTO.getName());
+        existingClient.setEmail(clientDTO.getEmail());
+
+        Client updatedClient = clientService.updateClient(existingClient);
+
+        ClientDTO updatedDTO = ClientMapper.toClientDTO(updatedClient);
+
+        Link selfLink = linkTo(methodOn(ClientController.class)
+                .getClientById(updatedDTO.getId()))
+                .withSelfRel();
+        updatedDTO.add(selfLink);
+
+        return new ResponseEntity<>(updatedDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteClientById(@PathVariable int id) {
+        try{
+            clientService.deleteClientById(id);
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
 
 

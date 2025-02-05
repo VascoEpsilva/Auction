@@ -30,4 +30,12 @@ public class ClientService implements IClientService {
     public Client updateClient(Client client) {
         return this.clientRepository.save(client);
     }
+
+
+    public void deleteClientById(int id) {
+        if (!clientRepository.existsById(id)) {
+            throw new RuntimeException("Client not found with ID: " + id);
+        }
+        clientRepository.deleteById(id);
+    }
 }

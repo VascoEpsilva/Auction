@@ -10,4 +10,5 @@ public interface IClientService {
     public Page<Client> getAllClients(int page, int size);
     public Client getClientById(int id);
     public Client updateClient(Client client);
+    public void deleteClientById(int id);
 }

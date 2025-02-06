@@ -35,6 +35,9 @@ public class AuctionItem {
     @NotNull
     private float initialPrice;
 
+    @NotNull
+    private boolean active;
+
     @OneToMany(mappedBy = "auctionItem")
     private List<Bid> bids;
 }

@@ -171,7 +171,6 @@ public class ClientController {
     public ResponseEntity<Void> deleteClientById(@PathVariable int id) {
         try{
             clientService.deleteClientById(id);
-
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         catch (RuntimeException e) {
